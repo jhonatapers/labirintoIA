@@ -25,14 +25,14 @@ public class App
 
             //populacao
             IGeradorPopulacao geradorPopulacao = new GeradorPopulacaoRandom();
-            GeneVo[] populacao = geradorPopulacao.gera(10, labirinto.getN() * labirinto.getN());
+            GeneVo[] populacao = geradorPopulacao.gera(10000, labirinto.getN() * labirinto.getN());
             System.out.print(populacao.toString());
 
             //Cruzamento
             ICruzador cruzador = new CruzadorUniponto();
 
             //AlgoritmoGentico
-            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 5000, cruzador, 10, 1).debug(true);
+            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 500000, cruzador, 10, 1).debug(true);
             GeneVo melhor = algoritmo.inicia();
             System.out.print(melhor.toString());
 

@@ -1,7 +1,5 @@
 package com.jhonatapers.labirinto.serivce.impl;
 
-import java.util.Random;
-
 import com.jhonatapers.labirinto.model.GeneVo;
 import com.jhonatapers.labirinto.serivce.IGeradorPopulacao;
 import com.jhonatapers.labirinto.util.NumerosAleatorios;

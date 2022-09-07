@@ -109,29 +109,29 @@ public class AlgoritmoGenetico implements IAlgoritmo {
                 break;
             }
 
-            coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);            
+            coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
             casasPercorridas++;
 
-            if(temComida(coordenadaAtual))
+            if (temComida(coordenadaAtual))
                 comidasComidas++;
 
-            if(comidasComidas == _labirinto.getComidas())     
-                return -1;           
+            if (comidasComidas == _labirinto.getComidas())
+                return -1;
 
             final int x = coordenadaAtual.x;
             final int y = coordenadaAtual.y;
-            long recorrencia = coordenadaVisitadas.stream().filter(c -> { return c.x == x && c.y == y; }).count();
+            long recorrencia = coordenadaVisitadas.stream().filter(c -> {
+                return c.x == x && c.y == y;
+            }).count();
 
-            if(recorrencia > 1)
+            if (recorrencia > 1)
                 aptidao += _penalizacao * recorrencia;
-
-            _labirinto.getLabirinto();
         }
 
-        if(comidasComidas > 0)
+        if (comidasComidas > 0)
             return aptidao / comidasComidas;
-        
-        return aptidao;        
+
+        return aptidao;
     }
 
     private boolean temComida(CoordenadaVo coordenadaAtual) {
@@ -277,19 +277,50 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
         int tamanhoPopulacao = _populacao.length;
 
-        int posicaoMutavel = NumerosAleatorios.random.nextInt(tamanhoPopulacao);
+        double quantidadeMutacoesPorPopulacao = _populacao.length * (_taxaMutacao / 100.0);
 
-        int[] geneMutado = _populacao[posicaoMutavel].getGene();
-        double quantidadeMutacoes = geneMutado.length * (_taxaMutacao / 100.0);
+        // double quantidadeMutacoesAreaCerta = quantidadeMutacoes / 10; // gesiel
+        // parametrizavel por dps
 
-        for (int i = 0; i < (int) quantidadeMutacoes; i++) {
-            int posicao = NumerosAleatorios.random.nextInt(geneMutado.length);
-            int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
+        for (int i = 0; i < quantidadeMutacoesPorPopulacao; i++) {
 
-            geneMutado[posicao] = mutacao;
+            int posicaoMutavel = NumerosAleatorios.random.nextInt(1, tamanhoPopulacao);
+            int[] geneMutado = _populacao[posicaoMutavel].getGene();
+
+            double quantidadeMutacoesPorGene = geneMutado.length * (_taxaMutacao / 100.0);
+
+            CoordenadaVo coordenadaAtual = new CoordenadaVo();
+            int movimentosEfetuados = 0;
+
+            for (int movimento : geneMutado) {
+                if (!podeMover(movimento, coordenadaAtual))
+                    break;
+
+                coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
+                movimentosEfetuados++;
+            }
+
+            for (int j = 0; j < (int) quantidadeMutacoesPorGene; j++) {
+
+                int posicao = NumerosAleatorios.random.nextInt(movimentosEfetuados, geneMutado.length);
+                int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
+
+                geneMutado[posicao] = mutacao;
+            }
+
+            /*
+             * for (int i = 0; i < (int) quantidadeMutacoesAreaCerta; i++) {
+             * int posicao = NumerosAleatorios.random.nextInt(geneMutado.length);
+             * int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
+             * 
+             * geneMutado[posicao] = mutacao;
+             * }
+             */
+
+            _populacao[posicaoMutavel] = new GeneVo(geneMutado);
+
         }
 
-        _populacao[posicaoMutavel] = new GeneVo(geneMutado);
     }
 
 }
