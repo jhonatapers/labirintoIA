@@ -32,7 +32,7 @@ public class App
             ICruzador cruzador = new CruzadorUniponto();
 
             //AlgoritmoGentico
-            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 5000, cruzador, 10).debug(true);
+            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 5000, cruzador, 10, 1).debug(true);
             GeneVo melhor = algoritmo.inicia();
             System.out.print(melhor.toString());
 

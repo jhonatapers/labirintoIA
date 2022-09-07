@@ -4,10 +4,9 @@ import java.util.Random;
 
 import com.jhonatapers.labirinto.model.GeneVo;
 import com.jhonatapers.labirinto.serivce.IGeradorPopulacao;
+import com.jhonatapers.labirinto.util.NumerosAleatorios;
 
 public class GeradorPopulacaoRandom implements IGeradorPopulacao {
-
-    Random ramdom = new Random();
 
     @Override
     public GeneVo[] gera(int tamanhoPopulacao, int tamanhoLabirinto) {
@@ -25,7 +24,7 @@ public class GeradorPopulacaoRandom implements IGeradorPopulacao {
         int[] direcoes = new int[tamanhoLabirinto];
 
         for (int i = 0; i < tamanhoLabirinto; i++)
-            direcoes[i] = ramdom.nextInt(9);
+            direcoes[i] = NumerosAleatorios.random.nextInt(8);
 
         return new GeneVo(direcoes);
     }
