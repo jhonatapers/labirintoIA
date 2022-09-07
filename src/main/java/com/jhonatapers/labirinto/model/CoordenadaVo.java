@@ -8,4 +8,9 @@ public class CoordenadaVo {
         x = 0;
         y = 0;
     }
+
+    public CoordenadaVo(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }

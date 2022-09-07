@@ -12,30 +12,28 @@ import com.jhonatapers.labirinto.serivce.impl.CruzadorUniponto;
 import com.jhonatapers.labirinto.serivce.impl.GeradorPopulacaoRandom;
 import com.jhonatapers.labirinto.util.CargaLabirinto;
 
-public class App 
-{
-    public static void main( String[] args )
-    {       
+public class App {
+    public static void main(String[] args) {
         try {
 
-            //carga labirinto
-            CargaLabirinto aham = new CargaLabirinto("D:\\Workspace\\PUCRS\\Inteligencia Artificial\\T1\\labirintoIA\\resources\\labirinto1.txt");
+            // carga labirinto
+            CargaLabirinto aham = new CargaLabirinto(
+                    "D:\\Workspace\\PUCRS\\Inteligencia Artificial\\T1\\labirintoIA\\resources\\labirinto1.txt");
             LabirintoVo labirinto = aham.getLabirinto();
             System.out.print(labirinto.toString());
 
-            //populacao
+            // populacao
             IGeradorPopulacao geradorPopulacao = new GeradorPopulacaoRandom();
-            GeneVo[] populacao = geradorPopulacao.gera(10000, labirinto.getN() * labirinto.getN());
+            GeneVo[] populacao = geradorPopulacao.gera(1000, (int)Math.pow(labirinto.getN(), 2));
             System.out.print(populacao.toString());
 
-            //Cruzamento
+            // Cruzamento
             ICruzador cruzador = new CruzadorUniponto();
 
-            //AlgoritmoGentico
-            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 500000, cruzador, 10, 1).debug(true);
+            // AlgoritmoGentico
+            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 5000000, cruzador, 10, 1).debug(true);
             GeneVo melhor = algoritmo.inicia();
             System.out.print(melhor.toString());
-
 
         } catch (IOException e) {
             e.printStackTrace();

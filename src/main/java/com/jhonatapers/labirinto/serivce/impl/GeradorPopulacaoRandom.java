@@ -19,12 +19,12 @@ public class GeradorPopulacaoRandom implements IGeradorPopulacao {
 
     private GeneVo criaGene(int tamanhoLabirinto) {
 
-        int[] direcoes = new int[tamanhoLabirinto];
+        int[] movimentos = new int[tamanhoLabirinto];
 
         for (int i = 0; i < tamanhoLabirinto; i++)
-            direcoes[i] = NumerosAleatorios.random.nextInt(8);
+            movimentos[i] = NumerosAleatorios.random.nextInt(8);
 
-        return new GeneVo(direcoes);
+        return new GeneVo(movimentos);
     }
 
 }

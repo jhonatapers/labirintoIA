@@ -39,10 +39,12 @@ public class AlgoritmoGenetico implements IAlgoritmo {
     @Override
     public GeneVo inicia() {
 
+        int melhorAptidao = 9999999;
+
         GeneVo escolhido = selecaoMelhor(_populacao);
         int aptidao = euristica(escolhido);
 
-        if (aptidao == -1)
+        if (aptidao == 0)
             return escolhido;
 
         for (int i = 0; i < _tentativasMaximas; i++) {
@@ -52,7 +54,7 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             aptidao = euristica(escolhido);
 
             // printaInformacoes(String.format("GERAÇÃO %s", i + 1), escolhido, score);
-            if (aptidao == -1)
+            if (aptidao == 0)
                 break;
 
             mutacao();
@@ -61,10 +63,14 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
             // printaInformacoes(String.format("GERAÇÃO %s , COM MUTAÇÃO", i + 1),
             // escolhido, score);
-            if (aptidao == -1)
+            if (aptidao == 0)
                 break;
 
-            System.out.println(aptidao);
+            if (aptidao < melhorAptidao) {
+                melhorAptidao = aptidao;
+                System.out.println(melhorAptidao);
+            }
+
         }
 
         // printaFinal(score);
@@ -100,6 +106,20 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
         List<CoordenadaVo> coordenadaVisitadas = new ArrayList<CoordenadaVo>();
 
+        /// TESTE GESIEL
+        /*
+         * int teste2 = 0;
+         * for (int movimento : gene.getGene()) {
+         * if (!podeMover(movimento, coordenadaAtual))
+         * break;
+         * 
+         * coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
+         * teste2++;
+         * }
+         * if (teste2 > 10)
+         * System.out.println(teste2);
+         */
+
         for (int movimento : gene.getGene()) {
 
             coordenadaVisitadas.add(coordenadaAtual);
@@ -109,15 +129,6 @@ public class AlgoritmoGenetico implements IAlgoritmo {
                 break;
             }
 
-            coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
-            casasPercorridas++;
-
-            if (temComida(coordenadaAtual))
-                comidasComidas++;
-
-            if (comidasComidas == _labirinto.getComidas())
-                return -1;
-
             final int x = coordenadaAtual.x;
             final int y = coordenadaAtual.y;
             long recorrencia = coordenadaVisitadas.stream().filter(c -> {
@@ -126,10 +137,28 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
             if (recorrencia > 1)
                 aptidao += _penalizacao * recorrencia;
-        }
 
+            if (temComida(coordenadaAtual) && recorrencia == 1)
+                comidasComidas++;
+
+            if (comidasComidas == _labirinto.getComidas())
+                return 0;
+
+            coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
+            casasPercorridas++;
+
+            if (casasPercorridas == gene.getGene().length - 1)
+                System.out.println("aham");
+        }
+        /*
         if (comidasComidas > 0)
-            return aptidao / comidasComidas;
+            aptidao = aptidao / comidasComidas;
+
+        aptidao += casasPercorridas;
+        /*if (comidasComidas > 0)
+            aptidao = aptidao * (casasPercorridas/comidasComidas);*/
+            
+        aptidao += _labirinto.getComidas() - comidasComidas;
 
         return aptidao;
     }
@@ -211,39 +240,26 @@ public class AlgoritmoGenetico implements IAlgoritmo {
     }
 
     public CoordenadaVo efetuaMovimento(int movimento, CoordenadaVo coordenadaAtual) {
-
         switch (movimento) {
             case 0:
-                coordenadaAtual.x--;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x - 1, coordenadaAtual.y);
             case 1:
-                coordenadaAtual.x++;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x + 1, coordenadaAtual.y);
             case 2:
-                coordenadaAtual.y--;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x, coordenadaAtual.y - 1);
             case 3:
-                coordenadaAtual.y++;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x, coordenadaAtual.y + 1);
             case 4:
-                coordenadaAtual.x--;
-                coordenadaAtual.y--;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x - 1, coordenadaAtual.y - 1);
             case 5:
-                coordenadaAtual.x++;
-                coordenadaAtual.y--;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x + 1, coordenadaAtual.y - 1);
             case 6:
-                coordenadaAtual.x++;
-                coordenadaAtual.y++;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x + 1, coordenadaAtual.y + 1);
             case 7:
-                coordenadaAtual.x--;
-                coordenadaAtual.y++;
-                break;
+                return new CoordenadaVo(coordenadaAtual.x - 1, coordenadaAtual.y + 1);
+            default:
+                return coordenadaAtual;
         }
-
-        return coordenadaAtual;
     }
 
     private GeneVo[] proximaGeracao(GeneVo melhorPopulacaoAnterior) {
@@ -301,6 +317,9 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             }
 
             for (int j = 0; j < (int) quantidadeMutacoesPorGene; j++) {
+
+                if (movimentosEfetuados >= geneMutado.length)
+                    System.out.print("aham");
 
                 int posicao = NumerosAleatorios.random.nextInt(movimentosEfetuados, geneMutado.length);
                 int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
