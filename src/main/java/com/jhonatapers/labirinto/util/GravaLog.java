@@ -30,9 +30,10 @@ public class GravaLog {
 
         String registro = "";
 
-        registro += "Aptidao;ComidasComidas;CasasPercorridas\n";
+        registro += "Aptidao;ComidasComidas;CasasPercorridas;Mutacoes\n";
         for (GeneVo geneVo : populacao) {
             registro += geneVo.getAptidao() + ";" + geneVo.getComidasComidas() + ";" + geneVo.getCasasPercorridas()
+                    + ";" + geneVo.getMutacoes()
                     + "\n";
         }
 

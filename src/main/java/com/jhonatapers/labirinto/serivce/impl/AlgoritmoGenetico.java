@@ -52,8 +52,8 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
         if (escolhido.getAptidao() == 0)
             return escolhido;
-    
-        int geracao= 0;
+
+        int geracao = 0;
         for (geracao = 0; geracao < _tentativasMaximas; geracao++) {
 
             _populacao = proximaGeracao(escolhido);
@@ -90,9 +90,10 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }        
+        }
 
         // printaFinal(score);
+
         return escolhido;
     }
 
@@ -348,7 +349,9 @@ public class AlgoritmoGenetico implements IAlgoritmo {
                 geneMutado[posicao] = mutacao;
             }
 
-            _populacao[posicaoMutavel] = new GeneVo(geneMutado);
+            GeneVo mutado = new GeneVo(geneMutado);
+            mutado.setMutacoes((int) quantidadeMutacoesPorGene + (int) quantidadeMutacoesAreaCerta);
+            _populacao[posicaoMutavel] = mutado;
 
         }
 

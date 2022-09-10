@@ -10,6 +10,8 @@ public class GeneVo {
 
     private int casasPercorridas;
 
+    private int mutacoes;
+
     public GeneVo(int[] gene) {
         this.gene = gene;
     }
@@ -40,6 +42,14 @@ public class GeneVo {
 
     public void setCasasPercorridas(int casasPercorridas) {
         this.casasPercorridas = casasPercorridas;
+    }
+    
+    public int getMutacoes() {
+        return mutacoes;
+    }
+
+    public void setMutacoes(int mutacoes) {
+        this.mutacoes = mutacoes;
     }
 
     @Override
