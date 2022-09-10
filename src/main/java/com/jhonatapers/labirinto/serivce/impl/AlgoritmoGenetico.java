@@ -1,5 +1,6 @@
 package com.jhonatapers.labirinto.serivce.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import com.jhonatapers.labirinto.model.GeneVo;
 import com.jhonatapers.labirinto.model.LabirintoVo;
 import com.jhonatapers.labirinto.serivce.IAlgoritmo;
 import com.jhonatapers.labirinto.serivce.ICruzador;
+import com.jhonatapers.labirinto.util.GravaLog;
 import com.jhonatapers.labirinto.util.NumerosAleatorios;
 
 public class AlgoritmoGenetico implements IAlgoritmo {
@@ -18,16 +20,20 @@ public class AlgoritmoGenetico implements IAlgoritmo {
     ICruzador _cruzador;
     int _taxaMutacao;
     int _penalizacao;
+
     boolean debug = false;
+    GravaLog _log;
 
     public AlgoritmoGenetico(GeneVo[] populacao, LabirintoVo labirinto, int tentativasMaximas, ICruzador cruzador,
-            int taxaMutacao, int penalizacao) {
+            int taxaMutacao, int penalizacao, GravaLog log) {
         _populacao = populacao;
         _labirinto = labirinto;
         _tentativasMaximas = tentativasMaximas;
         _cruzador = cruzador;
         _taxaMutacao = taxaMutacao;
         _penalizacao = penalizacao;
+
+        _log = log;
     }
 
     @Override
@@ -42,59 +48,69 @@ public class AlgoritmoGenetico implements IAlgoritmo {
         int melhorAptidao = 9999999;
 
         GeneVo escolhido = selecaoMelhor(_populacao);
-        int aptidao = euristica(escolhido);
+        // int aptidao = euristica(escolhido);
 
-        if (aptidao == 0)
+        if (escolhido.getAptidao() == 0)
             return escolhido;
-
-        for (int i = 0; i < _tentativasMaximas; i++) {
+    
+        int geracao= 0;
+        for (geracao = 0; geracao < _tentativasMaximas; geracao++) {
 
             _populacao = proximaGeracao(escolhido);
             escolhido = selecaoMelhor(_populacao);
-            aptidao = euristica(escolhido);
+            // aptidao = euristica(escolhido);
 
             // printaInformacoes(String.format("GERAÇÃO %s", i + 1), escolhido, score);
-            if (aptidao == 0)
+            if (escolhido.getAptidao() == 0)
                 break;
 
             mutacao();
             escolhido = selecaoMelhor(_populacao);
-            aptidao = euristica(escolhido);
+            // aptidao = euristica(escolhido);
 
             // printaInformacoes(String.format("GERAÇÃO %s , COM MUTAÇÃO", i + 1),
             // escolhido, score);
-            if (aptidao == 0)
+            if (escolhido.getAptidao() == 0)
                 break;
 
-            if (aptidao < melhorAptidao) {
-                melhorAptidao = aptidao;
-                System.out.println(melhorAptidao);
+            if (escolhido.getAptidao() < melhorAptidao) {
+                melhorAptidao = escolhido.getAptidao();
+                System.out.println(escolhido.toString());
             }
 
+            if (debug)
+                _log.gravaGeracao(geracao, _populacao, escolhido);
         }
+
+        _log.gravaGeracao(geracao, _populacao, escolhido);
+
+        if (debug) {
+            try {
+                _log.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }        
 
         // printaFinal(score);
         return escolhido;
     }
 
     private GeneVo selecaoMelhor(GeneVo[] populacao) {
+        GeneVo melhorGene = populacao[0];
+        euristica(melhorGene);
 
-        int melhorResultado = euristica(populacao[0]);
-        int melhorGene = 0;
+        for (GeneVo gene : populacao) {
+            euristica(gene);
 
-        for (int i = 0; i < populacao.length; i++) {
-            int aptidao = euristica(populacao[i]);
-
-            if (aptidao < melhorResultado) {
-                melhorGene = i;
-                melhorResultado = aptidao;
-            }
+            if (gene.getAptidao() < melhorGene.getAptidao())
+                melhorGene = gene;
         }
 
-        return populacao[melhorGene];
+        return melhorGene;
     }
 
-    private int euristica(GeneVo gene) {
+    private void euristica(GeneVo gene) {
 
         int aptidao = 0;
 
@@ -105,20 +121,6 @@ public class AlgoritmoGenetico implements IAlgoritmo {
         CoordenadaVo coordenadaAtual = new CoordenadaVo();
 
         List<CoordenadaVo> coordenadaVisitadas = new ArrayList<CoordenadaVo>();
-
-        /// TESTE GESIEL
-        /*
-         * int teste2 = 0;
-         * for (int movimento : gene.getGene()) {
-         * if (!podeMover(movimento, coordenadaAtual))
-         * break;
-         * 
-         * coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
-         * teste2++;
-         * }
-         * if (teste2 > 10)
-         * System.out.println(teste2);
-         */
 
         for (int movimento : gene.getGene()) {
 
@@ -141,26 +143,37 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             if (temComida(coordenadaAtual) && recorrencia == 1)
                 comidasComidas++;
 
-            if (comidasComidas == _labirinto.getComidas())
-                return 0;
+            if (comidasComidas == _labirinto.getComidas()) {
+                // gene.setComidasComidas(comidasComidas);
+                // gene.setAptidao(aptidao);
+                // gene.setCasasPercorridas(casasPercorridas);
+                break;
+            }
 
             coordenadaAtual = efetuaMovimento(movimento, coordenadaAtual);
             casasPercorridas++;
 
-            if (casasPercorridas == gene.getGene().length - 1)
-                System.out.println("aham");
         }
-        /*
-        if (comidasComidas > 0)
-            aptidao = aptidao / comidasComidas;
 
-        aptidao += casasPercorridas;
-        /*if (comidasComidas > 0)
-            aptidao = aptidao * (casasPercorridas/comidasComidas);*/
-            
+        aptidao -= casasPercorridas;
+
+        if (comidasComidas > 0) {
+            aptidao = aptidao / comidasComidas;
+        }
+
+        // aptidao += casasPercorridas;
+        // if (comidasComidas > 0)
+        // aptidao = aptidao * (casasPercorridas / comidasComidas);
+
         aptidao += _labirinto.getComidas() - comidasComidas;
 
-        return aptidao;
+        if (comidasComidas == _labirinto.getComidas())
+            aptidao = 0;
+
+        gene.setComidasComidas(comidasComidas);
+        gene.setAptidao(aptidao);
+        gene.setCasasPercorridas(casasPercorridas);
+
     }
 
     private boolean temComida(CoordenadaVo coordenadaAtual) {
@@ -295,8 +308,8 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
         double quantidadeMutacoesPorPopulacao = _populacao.length * (_taxaMutacao / 100.0);
 
-        // double quantidadeMutacoesAreaCerta = quantidadeMutacoes / 10; // gesiel
         // parametrizavel por dps
+        double quantidadeMutacoesAreaCerta = quantidadeMutacoesPorPopulacao / 10;
 
         for (int i = 0; i < quantidadeMutacoesPorPopulacao; i++) {
 
@@ -319,7 +332,7 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             for (int j = 0; j < (int) quantidadeMutacoesPorGene; j++) {
 
                 if (movimentosEfetuados >= geneMutado.length)
-                    System.out.print("aham");
+                    break;
 
                 int posicao = NumerosAleatorios.random.nextInt(movimentosEfetuados, geneMutado.length);
                 int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
@@ -327,14 +340,13 @@ public class AlgoritmoGenetico implements IAlgoritmo {
                 geneMutado[posicao] = mutacao;
             }
 
-            /*
-             * for (int i = 0; i < (int) quantidadeMutacoesAreaCerta; i++) {
-             * int posicao = NumerosAleatorios.random.nextInt(geneMutado.length);
-             * int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
-             * 
-             * geneMutado[posicao] = mutacao;
-             * }
-             */
+            for (int j = 0; j < (int) quantidadeMutacoesAreaCerta; j++) {
+
+                int posicao = NumerosAleatorios.random.nextInt(movimentosEfetuados == 0 ? 1 : movimentosEfetuados);
+                int mutacao = NumerosAleatorios.novoNumero(8, geneMutado[posicao]);
+
+                geneMutado[posicao] = mutacao;
+            }
 
             _populacao[posicaoMutavel] = new GeneVo(geneMutado);
 
