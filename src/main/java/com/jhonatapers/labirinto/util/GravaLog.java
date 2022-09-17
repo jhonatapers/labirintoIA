@@ -24,7 +24,7 @@ public class GravaLog {
     }
 
     public void gravaGeracao(int geracao, GeneVo[] populacao, GeneVo melhor) {
-        grava("\n\nGERAÇÃO Nº " + geracao);
+        grava("\n\nGERACAO Nº " + geracao);
 
         grava("\nMelhor: " + melhor.toString());
 
