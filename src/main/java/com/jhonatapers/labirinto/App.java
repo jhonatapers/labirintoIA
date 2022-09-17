@@ -1,5 +1,6 @@
 package com.jhonatapers.labirinto;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.jhonatapers.labirinto.model.GeneVo;
@@ -18,17 +19,13 @@ public class App {
     public static void main(String[] args) {
         try {
 
-            // carga labirinto
-            CargaLabirinto aham = new CargaLabirinto(
-                    "D:\\Workspace\\PUCRS\\Inteligencia Artificial\\T1\\labirintoIA\\resources\\labirinto1.txt");
-            LabirintoVo labirinto = aham.getLabirinto();
+            String labirintoFile = new File(".").getCanonicalPath() + "\\resources\\labirinto1.txt";
+            LabirintoVo labirinto = new CargaLabirinto(labirintoFile).getLabirinto();
             System.out.print(labirinto.toString());
 
             // populacao
             IGeradorPopulacao geradorPopulacao = new GeradorPopulacaoRandom();
-            // GeneVo[] populacao = geradorPopulacao.gera(100,
-            // (int)Math.pow(labirinto.getN(), 2));
-            GeneVo[] populacao = geradorPopulacao.gera(100, labirinto.getN() * 10);
+            GeneVo[] populacao = geradorPopulacao.gera(25, (int)Math.pow(labirinto.getN(), 2));
             System.out.print(populacao.toString());
 
             // Cruzamento
@@ -38,9 +35,11 @@ public class App {
             GravaLog log = new GravaLog(DateUtils.getDateTime());
 
             // AlgoritmoGentico
-            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 5000000, cruzador, 25, 10, log)
+            IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 50000, cruzador, 25, 10, log)
                     .debug(true);
             GeneVo melhor = algoritmo.inicia();
+
+            System.out.println("ACABOU!");
             System.out.print(melhor.toString());
 
         } catch (IOException e) {
