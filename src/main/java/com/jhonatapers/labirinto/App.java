@@ -38,12 +38,15 @@ public class App {
             IAlgoritmo algoritmo = new AlgoritmoGenetico(populacao, labirinto, 50000, cruzador, 25, 10, log).debug(true);
             GeneVo melhor = algoritmo.inicia();
 
-            System.out.println("ACABOU!");
+            System.out.println("ACABOU GENETICO!");
             System.out.print(melhor.toString());
 
             // Solução A*
             IAlgoritmo aEstrela = new AlgorimoAEstrela(labirinto);
             GeneVo solucaoAEstrela = aEstrela.inicia();
+
+            System.out.println("ACABOU A*!");
+            System.out.print(solucaoAEstrela.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
