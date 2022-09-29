@@ -5,6 +5,8 @@ import com.jhonatapers.labirinto.serivce.IAlgoritmo;
 
 public class AlgorimoAEstrela implements IAlgoritmo {
 
+    private boolean debug;
+
     @Override
     public GeneVo inicia() {
         return null;
@@ -12,7 +14,8 @@ public class AlgorimoAEstrela implements IAlgoritmo {
 
     @Override
     public IAlgoritmo debug(boolean ativo) {
-        return null;
+        debug = ativo;
+        return this;
     }
     
 }

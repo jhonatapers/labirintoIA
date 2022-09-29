@@ -45,8 +45,6 @@ public class GravaLog {
     public void gravaGene(int geracao, GeneVo gene) {
         grava("\n\nGERAÇÃO Nº " + geracao);
 
-        // gesiel
-
         grava("\n****************************************************");
     }
 

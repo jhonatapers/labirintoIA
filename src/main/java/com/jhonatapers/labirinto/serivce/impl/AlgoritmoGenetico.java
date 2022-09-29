@@ -48,7 +48,6 @@ public class AlgoritmoGenetico implements IAlgoritmo {
         int melhorAptidao = 9999999;
 
         GeneVo escolhido = selecaoMelhor(_populacao);
-        // int aptidao = euristica(escolhido);
 
         if (escolhido.getAptidao() == 0)
             return escolhido;
@@ -58,18 +57,13 @@ public class AlgoritmoGenetico implements IAlgoritmo {
 
             _populacao = proximaGeracao(escolhido);
             escolhido = selecaoMelhor(_populacao);
-            // aptidao = euristica(escolhido);
 
-            // printaInformacoes(String.format("GERAÇÃO %s", i + 1), escolhido, score);
             if (escolhido.getAptidao() == 0)
                 break;
 
             mutacao();
             escolhido = selecaoMelhor(_populacao);
-            // aptidao = euristica(escolhido);
-
-            // printaInformacoes(String.format("GERAÇÃO %s , COM MUTAÇÃO", i + 1),
-            // escolhido, score);
+            
             if (escolhido.getAptidao() == 0)
                 break;
 
@@ -92,17 +86,15 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             }
         }
 
-        // printaFinal(score);
-
         return escolhido;
     }
 
     private GeneVo selecaoMelhor(GeneVo[] populacao) {
         GeneVo melhorGene = populacao[0];
-        euristica(melhorGene);
+        heuristica(melhorGene);
 
         for (GeneVo gene : populacao) {
-            euristica(gene);
+            heuristica(gene);
 
             if (gene.getAptidao() < melhorGene.getAptidao())
                 melhorGene = gene;
@@ -111,7 +103,7 @@ public class AlgoritmoGenetico implements IAlgoritmo {
         return melhorGene;
     }
 
-    private void euristica(GeneVo gene) {
+    private void heuristica(GeneVo gene) {
 
         int aptidao = 0;
 
@@ -145,9 +137,6 @@ public class AlgoritmoGenetico implements IAlgoritmo {
                 comidasComidas++;
 
             if (comidasComidas == _labirinto.getComidas()) {
-                // gene.setComidasComidas(comidasComidas);
-                // gene.setAptidao(aptidao);
-                // gene.setCasasPercorridas(casasPercorridas);
                 break;
             }
 
@@ -162,9 +151,6 @@ public class AlgoritmoGenetico implements IAlgoritmo {
             aptidao = aptidao / comidasComidas;
         }
 
-        // aptidao += casasPercorridas;
-        // if (comidasComidas > 0)
-        // aptidao = aptidao * (casasPercorridas / comidasComidas);
 
         aptidao += _labirinto.getComidas() - comidasComidas;
 
