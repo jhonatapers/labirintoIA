@@ -1,3 +1,5 @@
 /target
 /resources/*.log
+.vs
+.vscode
 
