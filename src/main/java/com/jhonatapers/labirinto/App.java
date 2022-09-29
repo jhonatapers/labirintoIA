@@ -39,7 +39,9 @@ public class App {
             GeneVo melhor = algoritmo.inicia();
 
             System.out.println("ACABOU GENETICO!");
-            System.out.print(melhor.toString());
+            System.out.println(melhor.toString());
+
+            System.out.println("********************");
 
             // Solução A*
             IAlgoritmo aEstrela = new AlgorimoAEstrela(labirinto);
